@@ -18,7 +18,6 @@ public class XmlOutput  {
 
     public static void create(List<Table> table_list, List<Font> font_list,String path) {
         try {
-
             create_stylesheet(path);
             create_tables_dtd(path, table_list, font_list);
             create_output(path, font_list, table_list);
@@ -203,7 +202,10 @@ public class XmlOutput  {
                         }
                         ps.println("]]>");
                         ps.println("</header_element>");
-                        p = p + t1.colspan;
+                        if (t1.colspan != 0)
+                            p += t1.colspan;
+                        else
+                            p++;
                     }
                     ps.println("</header_line>");
                 }
@@ -224,7 +226,10 @@ public class XmlOutput  {
                         }
                         ps.println("]]>");
                         ps.println("</cell>");
-                        k = k + t.colspan;
+                        if (t.colspan != 0)
+                            k += t.colspan;
+                        else
+                            k++;
                     }
                     ps.println("</data_row>");
 

@@ -59,7 +59,8 @@ public class FirstClassification {
         this.fonts = new ArrayList<Font>();
         this.lines = new ArrayList<Line>();
         this.mlbs = new ArrayList<Multiline_Block>();
-        this.interactive_extraction = interactivity;
+        //this.interactive_extraction = interactivity;
+        this.interactive_extraction = false;
         this.path = p;
     }
 
@@ -74,11 +75,12 @@ public class FirstClassification {
             for (Element page : doc.getRootElement().getChildren("page")) {
                 lines_before = doPage(lines_before, page);
             } // end of while pages
+            System.out.println("Counted Pages");
 
             multiline_block_merge(this.mlbs, this.lines);
-
+            
             List<Table> tables = SecondClassification.decompose_tables(mlbs, lines);
-
+                
             if (interactive_extraction == true) {
                 SemiOutputFrame so = new SemiOutputFrame(tables, fonts, path);
                 so.setVisible(true);
