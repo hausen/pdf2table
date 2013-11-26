@@ -8,12 +8,11 @@
 package pdf2xml;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.List;
 
 public class PDF2XML {
 
@@ -66,64 +65,14 @@ public class PDF2XML {
     }
     
     
-    public static void convert(String f, String s, String t, String from,
-            String to, boolean interactive_extraction) {
+    public static void convert(String xmlFile,String xmlDirPath, List<Integer> pageNumbers) {
         try {
-            System.out.println(t);
-
-            File my_file = new File(t);
-            my_file.mkdirs();
-
-            File my_file2 = new File(t, "pdf2xml.dtd");
-            FileOutputStream fos = new FileOutputStream(my_file2);
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
-            try {
-                build_dtd(osw);
-            } finally {
-                osw.close();
-                fos.close();
-            }
-
-            String cmd = "";
-
-            try {
-                Runtime rt = Runtime.getRuntime();
-
-                if (from.equals("") || to.equals("")) {
-
-                    cmd = "pdftohtml -xml " + s + " " + t + File.separator + f;
-                    System.out.println(cmd);
-                    Process p = rt.exec(cmd);
-                    p.waitFor();
-                } else {
-                    try {
-                        int a = Integer.parseInt(from);
-                        int b = Integer.parseInt(to);
-                        cmd = "pdftohtml -f " + a + " -l " + b + " -xml " + s
-                                + " " + t + File.separator + f;
-                        System.out.println(cmd);
-                        Process p = rt.exec(cmd);
-                        p.waitFor();
-                    } catch (Exception e) {
-                        System.out.println(e);
-                    }
-                }
-                String filename = t + File.separator + f + ".xml"; 
-                cleanFile(filename);
-                FirstClassification fc = new FirstClassification(
-                        interactive_extraction, t);
-                fc.run(filename);
-
-            } catch (IOException ie) {
+                cleanFile(xmlFile);
+                FirstClassification fc = new FirstClassification(xmlDirPath);
+                fc.run(xmlFile,pageNumbers);
+            } catch (Exception ie) {
                 System.out.println("Error: " + ie);
-            } catch (InterruptedException ie2) {
-                System.out.println("The program pdftohtml was interrupted.");
             }
-        } catch (Exception e) {
-            System.out
-                    .println("Exception in class: PDF2XML and method: constructor. "
-                            + e);
-        }
     }
 	
     public static void build_dtd(OutputStreamWriter osw) throws IOException {

@@ -50,22 +50,21 @@ public class FirstClassification {
     List<Font> fonts;
     List<Line> lines;
     List<Multiline_Block> mlbs;
-    boolean interactive_extraction;
-    String path;
+    String path = null;
+
     
     int distance_sum = 0;
 
-    public FirstClassification(boolean interactivity, String p) {//, int c) {
+    public FirstClassification(String path) {//, int c) {
         this.fonts = new ArrayList<Font>();
         this.lines = new ArrayList<Line>();
         this.mlbs = new ArrayList<Multiline_Block>();
+        this.path = path;
         //this.interactive_extraction = interactivity;
-        this.interactive_extraction = false;
-        this.path = p;
     }
 
     
-    public void run(final String file_name) {
+    public void run(final String file_name,List<Integer> pageNumbers) {
 
         SAXBuilder builder = new SAXBuilder();
         try {
@@ -76,17 +75,11 @@ public class FirstClassification {
                 lines_before = doPage(lines_before, page);
             } // end of while pages
             System.out.println("Counted Pages");
-
-            multiline_block_merge(this.mlbs, this.lines);
-            
+            multiline_block_merge(this.mlbs, this.lines);            
             List<Table> tables = SecondClassification.decompose_tables(mlbs, lines);
-                
-            if (interactive_extraction == true) {
-                SemiOutputFrame so = new SemiOutputFrame(tables, fonts, path);
-                so.setVisible(true);
-            } else {
-                XmlOutput.create(tables, fonts, path);
-            }
+            File f = new File(file_name);
+            String table_xml_file = f.getName().replace(".xml","") + "_tables.xml";
+            XmlOutput.create(tables, fonts, path,pageNumbers,table_xml_file);
         } catch (JDOMException e) {
             System.out.println(e.getMessage());
             //showErrorFrame(file_name);
@@ -469,74 +462,4 @@ public class FirstClassification {
         return new int[] {removed_elements_before, removed_elements_after};
     }
 	
-    private void showErrorFrame(final String file_name) {
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        Frame f = new Frame(ge.getDefaultScreenDevice().getDefaultConfiguration());
-
-        Dialog d = new Dialog(f, "Failure", true);
-        Label l = new Label("pdftohtml was unable to return right data.");
-        Label l2 = new Label("Would you like to restart with pre-debugging?");
-        d.setLayout(null);
-        l.setBounds(60,50,300,20);
-        l2.setBounds(60,70,300,20);
-        d.add(l);
-        d.add(l2);
-        d.setSize(420,150);
-
-        Button b = new Button("Yes");
-        b.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                Button b2 = (Button) evt.getSource();
-                debug_pdftohtml_output(file_name);
-                ((Dialog)b2.getParent()).dispose();
-            }
-        });
-        b.setBounds(180,100,60,20);
-
-        Button b2 = new Button("No");
-        b2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                Button b3 = (Button) evt.getSource();
-                ((Dialog)b3.getParent()).dispose();
-            }
-        });
-        b.setBounds(180,100,60,20);
-        b2.setBounds(250,100,60,20);
-
-        d.add(b);
-        d.add(b2);
-        d.setLocationRelativeTo(null);
-        d.setVisible(true);
-    }
-    
-    private void debug_pdftohtml_output(final String filename) {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(
-                    filename));
-
-            PrintStream dos = new PrintStream(new FileOutputStream(new File(
-                    this.path + File.separator + "debugged_output.xml")));
-
-            String current_line = br.readLine();
-
-            while (current_line != null) {
-                current_line = current_line.replaceAll("A href", "a href");
-                current_line = current_line.replaceAll("<B>", "<b>");
-                current_line = current_line.replaceAll("<I>", "<i>");
-                current_line = current_line.replaceAll("</I>", "</i>");
-                current_line = current_line.replaceAll("</B>", "</b>");
-
-                dos.println(current_line);
-                current_line = br.readLine();
-            }
-
-            run(this.path + File.separator + "debugged_output.xml");
-
-            dos.close();
-            br.close();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
 }

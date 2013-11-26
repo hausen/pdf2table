@@ -16,11 +16,11 @@ import java.util.List;
 public class XmlOutput  {
 
 
-    public static void create(List<Table> table_list, List<Font> font_list,String path) {
+    public static void create(List<Table> table_list, List<Font> font_list,String path,List<Integer> pageNumbers,String opFile) {
         try {
             create_stylesheet(path);
             create_tables_dtd(path, table_list, font_list);
-            create_output(path, font_list, table_list);
+            create_output(path, font_list, table_list,pageNumbers,opFile);
         }
         catch (Exception e) {
             System.out.println("Exception in class: XmlOutput and method: constructor. " + e);
@@ -152,12 +152,13 @@ public class XmlOutput  {
     }
    	
     public static void create_output(String path, List<Font> fonts,
-            List<Table> tables) {
+            List<Table> tables,List<Integer> pageNumbers,String op_file) {
         try {
-            File my_file = new File(path, "output.xml");
+            File my_file = new File(path, op_file);
             System.out.println(my_file.toString());
             PrintStream ps = new PrintStream(new FileOutputStream(my_file),
                     true, "UTF-16");
+            int tables_extracted = 0;
 
             ps.println("<?xml version=\"1.0\" encoding=\"UTF-16\" ?>");
             ps.println("<?xml-stylesheet href=\"table_view.xsl\" type=\"text/xsl\" ?>");
@@ -171,13 +172,18 @@ public class XmlOutput  {
             }
 
             for (int i = 0; i < tables.size(); i++) {
-
+                
                 Table c_table = tables.get(i);
+                int current_page = c_table.page;
+                if(!pageNumbers.contains(current_page))
+                    continue;
+                tables_extracted ++;
                 int cells_on_column = 0;
+                System.out.println("Extracting table on Page:"+current_page);
 
                 ps.println("<table>");
          
-                ps.println("<page>" + "TABLE ON PAGE " + c_table.page
+                ps.println("<page>" + "TABLE ON PAGE " + current_page
                         + "</page>");
                 ps.println("<title>" + c_table.title + "</title>");
                 // Mac version below
@@ -241,7 +247,7 @@ public class XmlOutput  {
 
             ps.println("</tables>");
 
-            System.out.println("TableExtractor extracted " + tables.size()
+            System.out.println("TableExtractor extracted " + tables_extracted
                     + " table(s)!");
             ps.close();
         }
