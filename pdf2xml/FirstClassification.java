@@ -89,7 +89,7 @@ public class FirstClassification {
             }
         } catch (JDOMException e) {
             System.out.println(e.getMessage());
-            showErrorFrame(file_name);
+            //showErrorFrame(file_name);
         } catch (IOException e) {
             System.out.println(e);
         } catch (Exception e) {

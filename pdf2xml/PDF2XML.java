@@ -7,13 +7,65 @@
 
 package pdf2xml;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 public class PDF2XML {
 
+    public static String stripNonValidXMLCharacters(String in) {
+        StringBuffer out = new StringBuffer(); // Used to hold the output.
+        char current; // Used to reference the current character.
+
+        if (in == null || ("".equals(in))) return ""; // vacancy test.
+        for (int i = 0; i < in.length(); i++) {
+            current = in.charAt(i); // NOTE: No IndexOutOfBoundsException caught here; it should not happen.
+            if ((current == 0x9) ||
+                (current == 0xA) ||
+                (current == 0xD) ||
+                ((current >= 0x20) && (current <= 0xD7FF)) ||
+                ((current >= 0xE000) && (current <= 0xFFFD)) ||
+                ((current >= 0x10000) && (current <= 0x10FFFF)))
+                out.append(current);
+        }
+        return out.toString();
+    }
+    public static String readFile(String fileName) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        try {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append("\n");
+                line = br.readLine();
+            }
+            return sb.toString();
+        } finally {
+            br.close();
+        }
+    }
+    
+    public static void writeToFile(String content, String filename) throws IOException{
+        PrintWriter out = new PrintWriter(filename);
+        out.print(content);
+        out.close();
+    }
+    
+    public static void cleanFile(String filename){
+        try{
+            String content = readFile(filename);
+            content = stripNonValidXMLCharacters(content);
+            writeToFile(content,filename);
+        }catch(Exception e){}
+    }
+    
+    
     public static void convert(String f, String s, String t, String from,
             String to, boolean interactive_extraction) {
         try {
@@ -56,10 +108,11 @@ public class PDF2XML {
                         System.out.println(e);
                     }
                 }
-
+                String filename = t + File.separator + f + ".xml"; 
+                cleanFile(filename);
                 FirstClassification fc = new FirstClassification(
                         interactive_extraction, t);
-                fc.run(t + File.separator + f + ".xml");
+                fc.run(filename);
 
             } catch (IOException ie) {
                 System.out.println("Error: " + ie);
