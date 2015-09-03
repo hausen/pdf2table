@@ -18,6 +18,14 @@ For MacOS
    - Copy the builded "pdftohtml" file into your /usr/local/bin folder in order to use it  from everywhere. (To be able to copy this file you have to have the root password on your computer).
   .
 
+Usage
+-----------------------------------------------------------
+
+1) run pdf2table.jar
+2) wait for output.xml to be written to disk
+   (you must check the output directory)
+3) run xsltproc csv_view.xsl output.xml 
+
 -----------------------------------------------------------
 COPYRIGHT
 -----------------------------------------------------------
