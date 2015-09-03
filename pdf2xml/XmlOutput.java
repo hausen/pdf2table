@@ -2,7 +2,20 @@
     Copyright 2005, 2005 Burcu Yildiz
     Contact: burcu.yildiz@gmail.com
     
-    This file is part of pdf2table.    pdf2table is free software: you can redistribute it and/or modify    it under the terms of the GNU General Public License as published by    the Free Software Foundation, either version 3 of the License, or    (at your option) any later version.    pdf2table is distributed in the hope that it will be useful,    but WITHOUT ANY WARRANTY; without even the implied warranty of    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    GNU General Public License for more details.    You should have received a copy of the GNU General Public License    along with pdf2table.  If not, see <http://www.gnu.org/licenses/>.
+    This file is part of pdf2table.
+
+    pdf2table is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    pdf2table is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with pdf2table.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package pdf2xml;
@@ -33,7 +46,7 @@ public class XmlOutput  {
 	  	File my_file = new File(path, "table_view.xsl");
 	  	PrintStream ps = new PrintStream(new FileOutputStream(my_file));
 	    
-	    String xsl_value = "<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>\n" +
+	  	String xsl_value = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
           "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n" +
           "<xsl:output method=\"html\" />\n" +
           "<xsl:template match=\"/\">" +
@@ -93,8 +106,23 @@ public class XmlOutput  {
   "</html>\n" +
   "</xsl:template>\n" +
   "</xsl:stylesheet>\n";
-      ps.print(xsl_value);
-      ps.close();
+	  	ps.print(xsl_value);
+	  	ps.close();
+
+	  	my_file = new File(this.path + "/csv_view.xsl");
+	  	ps = new PrintStream(new FileOutputStream(my_file));			  	xsl_value = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" + 
+	  	            "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n" + 
+	  	            "<xsl:output method=\"text\" />\n" + 
+	  	            "<xsl:template match=\"/\">\n" + 
+	  	            "<xsl:for-each select=\"tables/table\">\n" + 
+	  	            "<xsl:for-each select=\"tbody/data_row\"><xsl:for-each select=\"cell\"><xsl:value-of select=\"normalize-space(.)\" />,</xsl:for-each><xsl:text>\n" + 
+	  	            "</xsl:text>\n" + 
+	  	            "</xsl:for-each>\n" + 
+	  	            "</xsl:for-each>\n" + 
+	  	            "</xsl:template>\n" + 
+	  	            "</xsl:stylesheet>\n"; 
+	  	ps.print(xsl_value);
+	  	ps.close();
       }
       catch (IOException ie) {
         System.out.println("Exception in class: XmlOutput and method: create_stylesheet. " + ie);
@@ -109,7 +137,7 @@ public class XmlOutput  {
 	  	File my_file = new File(path, "tables.dtd");
 	  	PrintStream ps = new PrintStream(new FileOutputStream(my_file));
 
-        String dtd_value = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n" +
+        String dtd_value = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
           "<!ELEMENT tables(table+,fontspec*)>\n" +
           "<!ELEMENT fontspec EMPTY>\n" +
           "<!ATTLIST fontspec\n" +
