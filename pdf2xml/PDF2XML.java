@@ -77,7 +77,7 @@ public class PDF2XML {
 	
     public static void build_dtd(OutputStreamWriter osw) throws IOException {
 	
-        String dtd = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n" +
+        String dtd = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                     "<!ELEMENT pdf2xml (page+,line*,fontspec*)>\n" +
                     "<!ELEMENT page (fontspec*, text*)>\n" +
                     "<!ATTLIST page\n" +
